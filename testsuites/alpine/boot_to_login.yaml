@@ -1,0 +1,16 @@
+---
+# Defaults for all tests.
+default:
+  test: boot_to_login
+  os: alpine
+  env:
+    # Disable the viewer so it can run without interaction.
+    VM_VIEWER: none
+
+# List of test suites.
+# Values are arrays, with all permutations tested.
+# The following results in 4 tests:
+suites:
+  - release: [v3.19, v3.20]
+    env:
+      VM_FIRMWARE: [bios, efi]

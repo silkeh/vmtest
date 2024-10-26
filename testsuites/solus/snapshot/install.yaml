@@ -1,0 +1,46 @@
+---
+# This suite validates all options in the Solus installer.
+# The following environment variables must be set to the corresponding ISO locations:
+#   ISO_BUDGIE, ISO_GNOME, ISO_PLASMA, ISO_XFCE
+
+default:
+  test: install
+  os: solus
+  release: 2024-10-14
+  edition: Budgie
+  env:
+    VMTEST_SKIP_QUICKGET: y
+    VM_VIEWER: none
+    VM_ISO: "$ISO_BUDGIE"
+    VM_RAM: 4G
+    VM_DISK_SIZE: 32G
+
+suites:
+  # Filesystems
+  - env:
+      VM_FIRMWARE: [bios, efi]
+      SOLUS_FS: [btrfs, ext4, f2fs]
+
+  # Swap
+  - env:
+      VM_FIRMWARE: [bios, efi]
+      SOLUS_FS: [btrfs]
+      SOLUS_SWAP: [no_hibernate, hibernate]
+
+  # LUKS
+  - env:
+      VM_FIRMWARE: [bios, efi]
+      SOLUS_FS: [btrfs, ext4, f2fs]
+      SOLUS_SWAP: [default, no_hibernate]
+      SOLUS_LUKS: [y]
+
+  # Other desktop environments
+  - edition: [GNOME]
+    env:
+      VM_ISO: ["$ISO_GNOME"]
+  - edition: [Plasma]
+    env:
+      VM_ISO: ["$ISO_PLASMA"]
+  - edition: [XFCE-Beta]
+    env:
+      VM_ISO: ["$ISO_XFCE"]

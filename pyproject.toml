@@ -1,0 +1,33 @@
+[project]
+name = 'vmtest'
+readme = 'README.md'
+license = {file = 'LICENSE.md'}
+dynamic = ['version']
+requires-python = '>= 3.11'
+dependencies = ['pillow', 'pyocr', 'PyYAML']
+
+[project.urls]
+Homepage = "https://github.com/getsolus/vmtest"
+Repository = "https://github.com/getsolus/vmtest.git"
+Issues = "https://github.com/getsolus/vmtest/issues"
+
+[project.scripts]
+vmtest = 'vmtest.cli:main'
+
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ['vmtest']
+
+[tool.setuptools_scm]
+version_file = "vmtest/_version.py"
+
+[tool.mypy]
+strict = true
+packages = 'vmtest, testcases'
+
+[[tool.mypy.overrides]]
+module = ['pyocr', 'pyocr.tesseract', 'PIL']
+ignore_missing_imports = true

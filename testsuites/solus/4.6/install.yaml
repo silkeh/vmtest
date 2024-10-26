@@ -1,0 +1,34 @@
+---
+default:
+  test: install
+  os: solus
+  release: 2024-10-14
+  edition: Budgie
+  env:
+    VM_VIEWER: none
+    VM_RAM: 4G
+    VM_DISK_SIZE: 32G
+
+suites:
+  # Filesystems
+  - env:
+      VM_FIRMWARE: [bios, efi]
+      SOLUS_FS: [btrfs, ext4, f2fs]
+
+  # Swap
+  - env:
+      VM_FIRMWARE: [bios, efi]
+      SOLUS_FS: [btrfs]
+      SOLUS_SWAP: [no_hibernate, hibernate]
+
+  # LUKS
+  - env:
+      VM_FIRMWARE: [bios, efi]
+      SOLUS_FS: [btrfs, ext4, f2fs]
+      SOLUS_SWAP: [default, no_hibernate]
+      SOLUS_LUKS: [y]
+
+  # Other desktop environments
+  - edition: [GNOME]
+  - edition: [Plasma]
+  - edition: [XFCE-Beta]

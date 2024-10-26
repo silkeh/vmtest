@@ -1,0 +1,5 @@
+---
+tesseract: eng
+values:
+  motd: Welcome to Alpine Linux
+  login: localhost login

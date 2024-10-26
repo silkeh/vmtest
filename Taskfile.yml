@@ -1,0 +1,19 @@
+---
+version: '3'
+tasks:
+  build:
+    desc: Build the wheel and source distribution packages
+    aliases: [default]
+    cmds:
+      - python3 -m build --wheel --sdist
+  clean:
+    desc: Remove build files
+    cmds:
+      - rm -rf build dist vmtest.egg-info
+  testclean:
+    desc: Remove VM and test result files
+    cmds:
+      - rm -rf machines results
+  distclean:
+    desc: Remove build, VM and test result files
+    deps: [clean, testclean]
