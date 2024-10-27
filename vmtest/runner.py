@@ -18,7 +18,6 @@ class Runner:
     """
     Runner runs specific tests.
     It also acts as runtime configuration for the test.
-    It is initialized using environment variables.
     """
 
     def __init__(
@@ -44,6 +43,9 @@ class Runner:
 
     @property
     def vm(self) -> VM:
+        """
+        VM used by the runner.
+        """
         if self._vm is not None:
             return self._vm
 
@@ -71,6 +73,11 @@ class Runner:
         return self._vm
 
     def run(self, commands: list[Command]) -> bool:
+        """
+        Execute the given commands against the VM.
+        :param commands: Commands to execute.
+        :return: True if all commands executed successfully.
+        """
         os.makedirs("results", exist_ok=True)
 
         try:
@@ -85,21 +92,43 @@ class Runner:
         return True
 
     def store_log(self, dest: str) -> None:
+        """
+        Store the test log in the given location.
+
+        :param dest: Desired location.
+        """
         shutil.copyfile(os.path.join(self.output_dir, "vmtest.log"), dest)
 
     def store_screenshot(self, dest: str) -> None:
+        """
+        Create and store a screenshot in the given location.
+        :param dest: Desired location.
+        """
         screenshot = Screenshot().create(self.vm)
         os.rename(screenshot, dest)
 
     def remove_results(self) -> None:
+        """
+        Remove the 'results' directory.
+        """
         shutil.rmtree(self.output_dir)
 
     def remove_vm(self, keep_iso: bool = False) -> None:
+        """
+        Remove the VM.
+
+        :param keep_iso: Remove everything but the ISO.
+        """
         self.vm.power_off()
         self.vm.remove(keep_iso)
 
 
 def set_locale(name: str) -> None:
+    """
+    Set the locale used by the test.
+
+    :param name: Name of the locale to use.
+    """
     path = Path(sys.argv[0]).resolve()
     while path.parent != Path("/"):
         path = path.parent
@@ -112,9 +141,9 @@ def set_locale(name: str) -> None:
 
 def run(*commands: Command) -> None:
     """
+    Run the test suite.
 
-    :param commands:
-    :return:
+    :param commands: Commands to execute.
     """
     logging.basicConfig(
         level=logging.getLevelName(os.environ.get("LOG_LEVEL", "info").upper()),
