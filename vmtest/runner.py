@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from vmtest._log import setup as log_setup
+from vmtest._util import getenv_bool
 from vmtest.command import Command, Fail, Screenshot, Sequence
 from vmtest.i18n import load_localization
 from vmtest.image import make_timelapse
@@ -158,37 +159,37 @@ def run(*commands: Command) -> None:
     parser.add_argument(
         "--save-last-screenshot",
         action="store_true",
-        default=bool(os.environ.get("VMTEST_SAVE_LAST_SCREENSHOT", True)),
+        default=getenv_bool("VMTEST_SAVE_LAST_SCREENSHOT", True),
         help="Store the last snapshot (VMTEST_SAVE_LAST_SCREENSHOT)",
     )
     parser.add_argument(
         "--save-timelapse",
         action="store_true",
-        default=bool(os.environ.get("VMTEST_SAVE_TIMELAPSE", True)),
+        default=getenv_bool("VMTEST_SAVE_TIMELAPSE", True),
         help="Store a timelapse (VMTEST_SAVE_TIMELAPSE)",
     )
     parser.add_argument(
         "--keep-results",
         action="store_true",
-        default=bool(os.environ.get("VMTEST_KEEP_RESULTS", False)),
+        default=getenv_bool("VMTEST_KEEP_RESULTS", False),
         help="Keep intermediate results like screenshots (VMTEST_KEEP_RESULTS)",
     )
     parser.add_argument(
         "--keep-vm",
         action="store_true",
-        default=bool(os.environ.get("VMTEST_KEEP_VM", False)),
+        default=getenv_bool("VMTEST_KEEP_VM", False),
         help="Keep the VM data afterwards (VMTEST_REMOVE_VM)",
     )
     parser.add_argument(
         "--remove-iso",
         action="store_true",
-        default=bool(os.environ.get("VMTEST_REMOVE_ISO", False)),
+        default=getenv_bool("VMTEST_REMOVE_ISO", False),
         help="Also remove the ISO when removing VM data (VMTEST_REMOVE_ISO)",
     )
     parser.add_argument(
         "--skip-quickget",
         action="store_true",
-        default=bool(os.environ.get("VMTEST_SKIP_QUICKGET", False)),
+        default=getenv_bool("VMTEST_SKIP_QUICKGET", False),
         help="Skip the quickget step",
     )
     args = parser.parse_args()

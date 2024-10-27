@@ -43,18 +43,18 @@ cd vmtest
 
 VMTest can be configured through environment variables:
 
-| Name                          | Default      | Description                                          |
-|-------------------------------|--------------|------------------------------------------------------|
-| `VMTEST_VM_DIR`               | `machines`   | The directory to create VMs in                       |
-| `VMTEST_RESULTS_DIR`          | `results`    | Directory to store output logs and screenshots in    |
-| `VMTEST_LANGUAGE`             | `en_US`      | Localization to use for translating strings          |
-| `VMTEST_SAVE_LAST_SCREENSHOT` | `""` (False) | Store the last snapshot                              |
-| `VMTEST_SAVE_TIMELAPSE`       | `""` (False) | Store a timelapse                                    |
-| `VMTEST_NO_CLEANUP`           | `""` (False) | Disable cleanup of screenshot and logging            |
-| `VMTEST_KEEP_VM`              | `""` (False) | Keep the VM data after the test                      |
-| `VMTEST_REMOVE_ISO`           | `""` (False) | Also remove the ISO when removing VM data            |
-| `VMTEST_SKIP_QUICKGET`        | `""` (False) | Skip retrieving the ISO and VM config using Quickget |
-| `LOG_LEVEL`                   | `info`       | Configure the log level, eg: `debug`                 |
+| Name                          | Default    | Description                                          |
+|-------------------------------|------------|------------------------------------------------------|
+| `VMTEST_VM_DIR`               | `machines` | The directory to create VMs in                       |
+| `VMTEST_RESULTS_DIR`          | `results`  | Directory to store output logs and screenshots in    |
+| `VMTEST_LANGUAGE`             | `en_US`    | Localization to use for translating strings          |
+| `VMTEST_SAVE_LAST_SCREENSHOT` | `true`     | Store the last snapshot                              |
+| `VMTEST_SAVE_TIMELAPSE`       | `true`     | Store a timelapse                                    |
+| `VMTEST_KEEP_RESULTS`         | `false`    | Disable cleanup of screenshot and logging            |
+| `VMTEST_KEEP_VM`              | `false`    | Keep the VM data after the test                      |
+| `VMTEST_REMOVE_ISO`           | `false`    | Also remove the ISO when removing VM data            |
+| `VMTEST_SKIP_QUICKGET`        | `false`    | Skip retrieving the ISO and VM config using Quickget |
+| `LOG_LEVEL`                   | `info`     | Configure the log level, eg: `debug`                 |
 
 Additionally, all [Quickemu configuration options] can be set using `VM_{name}`.
 The following are generally useful:
