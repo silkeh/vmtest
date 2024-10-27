@@ -477,25 +477,25 @@ def main() -> None:
         action="store_true",
         help="List available tests instead of running them",
     )
-    parser.add_argument("-s", "--suite", type=str, help="Run the given test suite")
+    parser.add_argument("-s", "--suite", type=Path, help="Run the given test suite")
     parser.add_argument(
         "-t",
         "--testcase-dir",
-        type=str,
+        type=Path,
         default="testcases",
         help="Directory containing test cases",
     )
     parser.add_argument(
         "-o",
         "--output-dir",
-        type=str,
+        type=Path,
         default="results",
         help="Directory to store test output in",
     )
     parser.add_argument(
         "-m",
         "--machine-dir",
-        type=str,
+        type=Path,
         default="machines",
         help="Directory to store VMs in",
     )
@@ -507,10 +507,10 @@ def main() -> None:
     if args.debug:
         os.environ["LOG_LEVEL"] = "debug"
 
-    os.environ["VMTEST_VM_DIR"] = args.machine_dir
+    os.environ["VMTEST_VM_DIR"] = str(args.machine_dir)
 
     if args.list:
-        __list_testcases(Path(args.testcase_dir))
+        __list_testcases(args.testcase_dir)
         exit(0)
 
     if args.suite:
@@ -519,8 +519,8 @@ def main() -> None:
             suites = Suites(
                 name=name,
                 data=yaml.safe_load(f),
-                path=Path(args.testcase_dir),
-                output=Path(args.output_dir),
+                path=args.testcase_dir,
+                output=args.output_dir,
             )
             log_setup(suites.output)
             suites.run()
@@ -539,5 +539,5 @@ def main() -> None:
         ts=datetime.now().astimezone(),
     )
 
-    log_setup(test.output_dir(Path(args.output_dir)))
-    test.run(Path(args.testcase_dir), Path(args.output_dir))
+    log_setup(test.output_dir(args.output_dir))
+    test.run(args.testcase_dir, args.output_dir)
