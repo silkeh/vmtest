@@ -261,6 +261,12 @@ class Sequence(Command):
             command.exec(vm)
 
 
+class And(Sequence):
+    """
+    Fail unless all the given commands succeed.
+    """
+
+
 class If(Sequence):
     """
     Execute a sequence of commands conditionally.
@@ -342,6 +348,24 @@ class IfRelease(Sequence):
         logging.info(f"🔀 {self._release} == {vm.info.release}")
         if vm.info.release.lower() == self._release:
             super().exec(vm)
+
+
+class Or(Sequence):
+    """
+    Fail unless one of the given commands succeeds.
+    """
+
+    def exec(self, vm: VM) -> None:
+        failures: list[Fail] = []
+
+        for command in self._commands:
+            try:
+                command.exec(vm)
+                return
+            except Fail as f:
+                failures.append(f)
+
+        raise Fail(f'All commands failed: {", ".join([str(f) for f in failures])}')
 
 
 class WaitFor(Command):
