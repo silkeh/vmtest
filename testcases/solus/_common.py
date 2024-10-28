@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from vmtest.command import (
+    And,
     FindText,
     If,
     IfEdition,
     Keys,
+    Or,
     Reboot,
     Screenshot,
     Sequence,
@@ -160,7 +162,7 @@ class Solus:
             ),
             IfEdition(
                 "gnome",
-                WaitFor(FindText("search")),
+                WaitFor(Or(FindText("search"), FindText("software updates"))),
                 Keys("meta_l", wait=1),  # Exit menu
             ),
         )
@@ -169,7 +171,7 @@ class Solus:
     def show_info_terminal() -> Sequence:
         return Sequence(
             WaitFor(MenuItem("terminal")),
-            WaitFor(FindText("testvm")),
+            WaitFor(And(Keys("ctrl-shift-equal"), FindText("testvm"))),
             # proof commands
             Text("free -h\n"),
             Text("lsblk\n"),
