@@ -7,6 +7,7 @@ import time
 from dataclasses import dataclass
 from typing import Optional
 
+import vmtest._log as log
 from vmtest._util import list_values
 
 
@@ -88,7 +89,7 @@ class VM:
         self._socket.close()
 
     def _exec(self, *args: str) -> None:
-        logging.debug(f"VM command: {args}")
+        log.debug("🖥️", f"VM command: {args}")
         self._socket.sendall((" ".join(args) + "\n").encode())
 
     def reset(self) -> None:
@@ -171,7 +172,7 @@ class QuickEmu(VM):
 
         if os.path.exists(self._pid) and _pid_from_file_exists(self._pid):
             if reuse_vm:
-                logging.warning("⚠️ Reusing running VM")
+                log.warning("⚠️", "Reusing running VM")
                 super().__init__(
                     info=info, socket_path=socket_path, screenshot_dir=screenshot_dir
                 )
@@ -181,7 +182,7 @@ class QuickEmu(VM):
 
         if os.path.exists(disk) and _filesize_gib(disk) >= 1:
             if reuse_disk:
-                logging.warning("⚠️ Reusing existing VM disk")
+                log.warning("⚠️", "Reusing existing VM disk")
             else:
                 raise ValueError("VM disk already exists")
 
@@ -189,7 +190,7 @@ class QuickEmu(VM):
         if create_config:
             self._write_config(dir, info.vm_name, conf)
 
-        logging.info(f"🚀 Starting VM {info.vm_name} (options: {opts})")
+        log.info("🚀", f"Starting VM {info.vm_name} (options: {opts})")
         subprocess.run(
             ["quickemu", "--vm", f"{info.vm_name}.conf"] + opts,
             cwd=dir,
@@ -251,7 +252,7 @@ class QuickEmu(VM):
         if pid is None:
             return
 
-        logging.debug(f"killing VM PID {pid}")
+        log.debug("🔨", f"killing VM PID {pid}")
         os.kill(pid, signal.SIGTERM)
         while _pid_exists(pid):
             time.sleep(1)
@@ -288,7 +289,7 @@ class QuickGet(QuickEmu):
         :param reuse_vm: Allow re-using a running VM.
         :param reuse_disk: Allow re-using an existing disk image.
         """
-        logging.info(f"⬇️  Retrieving VM for {info}")
+        log.info("⬇️", f"Retrieving VM for {info}")
         self._remove_config(dir, info.vm_name)
 
         subprocess.run(

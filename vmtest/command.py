@@ -1,13 +1,13 @@
-import logging
 import os.path
 import time
 from typing import Callable, Optional
 
-from .i18n import I18n
-from .image import make_png, search_screenshot, search_screenshot_regex
-from .keymap import Keymap
-from .keymap import _current as current_keymap
-from .vm import VM
+from vmtest.i18n import I18n
+from vmtest.image import make_png, search_screenshot, search_screenshot_regex
+from vmtest.keymap import Keymap
+from vmtest.keymap import _current as current_keymap
+from vmtest.vm import VM
+from vmtest import _log as log
 
 
 class Fail(Exception):
@@ -79,11 +79,11 @@ class FindText(Command):
             if search_screenshot_regex(
                 file, self._text, self._match_case, self._ocr_scale
             ):
-                logging.info(f"✅ Found {repr(self._text)}")
+                log.info("✅", f"Found {repr(self._text)}")
                 return
         else:
             if search_screenshot(file, self._text, self._match_case, self._ocr_scale):
-                logging.info(f"✅ Found {repr(self._text)}")
+                log.info("✅", f"Found {repr(self._text)}")
                 return
 
         raise Fail(f"{repr(self._text)} not found")
@@ -115,7 +115,7 @@ class Keys(Command):
         self._keymap = keymap if keymap is not None else current_keymap
 
     def exec(self, vm: VM) -> None:
-        logging.info(f"⌨️  {self._keys}")
+        log.info("⌨️", " ".join([repr(k) for k in self._keys]))
 
         for k in self._keys:
             self._keymap.send(vm, k)
@@ -153,7 +153,7 @@ class PowerOff(Command):
     """
 
     def exec(self, vm: VM) -> None:
-        logging.info("🔌 Powering off the VM")
+        log.info("🔌", "Powering off the VM")
         vm.power_off()
 
 
@@ -163,7 +163,7 @@ class Reboot(Command):
     """
 
     def exec(self, vm: VM) -> None:
-        logging.info("🔃 Rebooting the VM")
+        log.info("🔃", "Rebooting the VM")
         vm.reset()
 
 
@@ -186,7 +186,7 @@ class Screenshot(Command):
 
     def exec(self, vm: VM) -> None:
         path = self.next()
-        logging.info(f"📸 {path}")
+        log.info("📸", path)
         self._create(vm, path)
 
     def next(self) -> str:
@@ -239,7 +239,7 @@ class Sleep(Command):
         self.seconds = seconds
 
     def exec(self, vm: VM) -> None:
-        logging.info(f"⏳ {self.seconds} s")
+        log.info("⏳", f"{self.seconds} s")
         time.sleep(self.seconds)
 
 
@@ -303,7 +303,7 @@ class IfEdition(Sequence):
         self._edition = edition
 
     def exec(self, vm: VM) -> None:
-        logging.info(f"🔀 {self._edition} == {vm.info.edition}")
+        log.info("🔀", f"{self._edition} == {vm.info.edition}")
         if vm.info.edition is not None and vm.info.edition.lower() == self._edition:
             super().exec(vm)
 
@@ -324,7 +324,7 @@ class IfOS(Sequence):
         self._os = osname
 
     def exec(self, vm: VM) -> None:
-        logging.info(f"🔀 {self._os} == {vm.info.os}")
+        log.info("🔀", f"{self._os} == {vm.info.os}")
         if vm.info.os.lower() == self._os:
             super().exec(vm)
 
@@ -345,7 +345,7 @@ class IfRelease(Sequence):
         self._release = release
 
     def exec(self, vm: VM) -> None:
-        logging.info(f"🔀 {self._release} == {vm.info.release}")
+        log.info("🔀", f"{self._release} == {vm.info.release}")
         if vm.info.release.lower() == self._release:
             super().exec(vm)
 
@@ -389,15 +389,16 @@ class WaitFor(Command):
         error: Optional[Fail] = None
 
         for attempt in range(self._attempts):
-            logging.info(
-                f"🔁 {attempt}/{self._attempts} {str(self._command)} (retry in {self._interval} s)"
+            log.info(
+                "🔁",
+                f"{attempt}/{self._attempts} {str(self._command)} (retry in {self._interval} s)",
             )
 
             try:
                 self._command.exec(vm)
                 return
             except Fail as f:
-                logging.debug(f"Attempt failed: {f}")
+                log.debug("😞", f"Attempt failed: {f}")
                 error = f
 
             time.sleep(self._interval)

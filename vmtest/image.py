@@ -1,8 +1,8 @@
-import logging
 import os.path
 import re
 import subprocess
 
+from vmtest import _log as log
 import pyocr.tesseract as tesseract
 from PIL import Image
 
@@ -47,7 +47,7 @@ def search_screenshot(file: str, text: str, match_case: bool, ocr_scale: float) 
     :return: Boolean indicating if the text has been found or not.
     """
     data = ocr_screenshot(file, ocr_scale)
-    logging.debug(f"OCR data: {repr(data)}")
+    log.debug("👁️", f"OCR data: {repr(data)}")
 
     if match_case:
         return text in data

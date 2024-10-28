@@ -1,12 +1,11 @@
 import argparse
-import logging
 import os
 import shutil
 import sys
 from pathlib import Path
 from typing import Optional
 
-from vmtest._log import setup as log_setup
+from vmtest import _log as log
 from vmtest._util import getenv_bool
 from vmtest.command import Command, Fail, Screenshot, Sequence
 from vmtest.i18n import load_localization
@@ -83,10 +82,10 @@ class Runner:
         try:
             Sequence(*commands).exec(self.vm)
         except Fail as ex:
-            logging.error(f"🚨 {ex.message}")
+            log.error("🚨", ex.message)
             return False
         except KeyboardInterrupt:
-            logging.error("🚨 exiting on request")
+            log.error("🚨", "exiting on request")
             return False
 
         return True
@@ -145,11 +144,6 @@ def run(*commands: Command) -> None:
 
     :param commands: Commands to execute.
     """
-    logging.basicConfig(
-        level=logging.getLevelName(os.environ.get("LOG_LEVEL", "info").upper()),
-        format="%(message)s",
-    )
-
     parser = argparse.ArgumentParser(description="Perform a VM test")
     parser.add_argument("os", type=str, help="OS to perform the test for")
     parser.add_argument("release", type=str, help="OS release to perform the test for")
@@ -224,7 +218,7 @@ def run(*commands: Command) -> None:
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
-    log_setup(args.output_dir)
+    log.setup(args.output_dir)
     set_locale(args.language)
 
     runner = Runner(
@@ -240,28 +234,30 @@ def run(*commands: Command) -> None:
     )
 
     result = runner.run(list(commands))
-    if not result:
-        logging.info("❌ Test failed")
+    if result:
+        log.info("✔️", "Test succeeded")
+    else:
+        log.info("❌", "Test failed")
 
     if args.save_timelapse:
-        logging.info(f"🎥 Creating timelapse in {args.output_dir}.mp4")
+        log.info("🎥", f"Creating timelapse in {args.output_dir}.mp4")
         make_timelapse(args.output_dir, args.output_dir + ".mp4")
 
     if args.save_last_screenshot:
-        logging.info(f"📸 Storing screenshot to {args.output_dir}.png")
+        log.info("📸", f"Storing screenshot to {args.output_dir}.png")
         runner.store_screenshot(args.output_dir + ".png")
 
     if not args.keep_vm:
-        logging.info("🗑️  Removing VM data")
+        log.info("🗑️", "Removing VM data")
         if not args.remove_iso:
-            logging.info("💿 Keeping ISO")
+            log.info("💿", "Keeping ISO")
 
         runner.remove_vm(keep_iso=not args.remove_iso)
 
     runner.store_log(args.output_dir + ".log")
 
     if not args.keep_results:
-        logging.info("🗑️  Removing intermediate results")
+        log.info("🗑️", "Removing intermediate results")
         runner.remove_results()
 
-    exit(result)
+    exit(not result)

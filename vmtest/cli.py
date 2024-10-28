@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import hashlib
-import logging
 import os.path
 import subprocess
 from dataclasses import dataclass
@@ -13,7 +12,7 @@ from typing import Any, Optional
 
 import yaml
 
-from vmtest._log import setup as log_setup
+from vmtest import _log as log
 from vmtest._util import list_values
 
 
@@ -169,7 +168,7 @@ class Test:
         """
         args, env = self._command(root_path, output_dir)
         cmd = " ".join(args)
-        logging.info(f"Would execute {repr(cmd)}, env: {env}")
+        log.info("ℹ️", f"Would execute {repr(cmd)}, env: {env}")
 
     def run(self, root_path: Path, output_dir: Path) -> bool:
         """
@@ -218,7 +217,7 @@ class Test:
         env.update(self._resolved_env())
         env["PYTHONPATH"] = self._python_path(root)
 
-        logging.debug(f'Python path: {env["PYTHONPATH"]}')
+        log.debug("🐞", f'Python path: {env["PYTHONPATH"]}')
 
         args = [
             "python3",
@@ -353,21 +352,22 @@ class Suites:
 
         for test in self.all():
             start = datetime.now(UTC)
-            logging.info(f"▶️  {test}")
+            log.info("▶️", str(test))
             result = test.run(self.path, self.output)
             duration = datetime.now(UTC) - start
-            logging.info(f"{self.__result_icon(result)} {test}")
-            logging.info(f"⏱️  Test took {duration}")
+            log.info(self.__result_icon(result), str(test))
+            log.info("⏱️", f"Test took {duration}")
 
             self.__test_html(test, result, duration)
 
-        logging.info(
-            f"✅ Suite completed. Results are stored in file://{os.path.realpath(self.output)}"
+        log.info(
+            "✅",
+            f"Suite completed. Results are stored in file://{os.path.realpath(self.output)}",
         )
         self.__end_html()
 
     def __start_html(self) -> None:
-        logging.info(f"🌐 Test suite overview: file://{os.path.realpath(self.index)}")
+        log.info("🌐", f"Test suite overview: file://{os.path.realpath(self.index)}")
 
         with open(self.index, "w") as fh:
             fh.write(
@@ -395,7 +395,7 @@ class Suites:
             )
 
     def __end_html(self) -> None:
-        logging.info(f"🌐 Test suite overview: file://{os.path.realpath(self.index)}")
+        log.info("🌐", f"Test suite overview: file://{os.path.realpath(self.index)}")
         with open(self.index, "a") as fh:
             fh.write("</table></body></html>")
 
@@ -522,7 +522,7 @@ def main() -> None:
                 path=args.testcase_dir,
                 output=args.output_dir,
             )
-            log_setup(suites.output)
+            log.setup(suites.output)
             suites.run()
             exit(0)
 
@@ -539,5 +539,5 @@ def main() -> None:
         ts=datetime.now().astimezone(),
     )
 
-    log_setup(test.output_dir(args.output_dir))
+    log.setup(test.output_dir(args.output_dir))
     test.run(args.testcase_dir, args.output_dir)
