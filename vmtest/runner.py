@@ -239,9 +239,9 @@ def run(*commands: Command) -> None:
         quickemu_height=1080,
     )
 
-    if not runner.run(list(commands)):
-        logging.info("ℹ️ VM and intermediate results have not been removed")
-        exit(1)
+    result = runner.run(list(commands))
+    if not result:
+        logging.info("❌ Test failed")
 
     if args.save_timelapse:
         logging.info(f"🎥 Creating timelapse in {args.output_dir}.mp4")
@@ -263,3 +263,5 @@ def run(*commands: Command) -> None:
     if not args.keep_results:
         logging.info("🗑️  Removing intermediate results")
         runner.remove_results()
+
+    exit(result)
