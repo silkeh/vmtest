@@ -83,10 +83,10 @@ class Runner:
         try:
             Sequence(*commands).exec(self.vm)
         except Fail as ex:
-            print(f"🚨 {ex.message}")
+            logging.error(f"🚨 {ex.message}")
             return False
         except KeyboardInterrupt:
-            print("🚨 exiting on request")
+            logging.error("🚨 exiting on request")
             return False
 
         return True
