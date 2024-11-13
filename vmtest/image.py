@@ -83,8 +83,13 @@ def make_png(file: str) -> str:
     base, _ = os.path.splitext(file)
     dest = base + ".png"
 
-    Image.open(file).save(dest)
-    os.remove(file)
+    try:
+        Image.open(file).save(dest)
+    except OSError as e:
+        log.warning("💥", f'Failed to convert screenshot: {e}')
+        Image.new(mode='RGBA', size=(1, 1)).save(dest)
+    finally:
+        os.remove(file)
 
     return dest
 
