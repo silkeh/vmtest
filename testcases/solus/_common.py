@@ -122,7 +122,7 @@ class Solus:
             self._partitioning(),
             Keys("alt-n", wait=1),
             # Configure user
-            WaitFor(FindText("What name")),
+            WaitFor(FindText("name")),
             Text(self.user_fullname + "\t"),
             Text(self.user_name + "\t"),
             Text("testvm\t"),
