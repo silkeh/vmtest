@@ -39,6 +39,18 @@ class Command:
         raise NotImplementedError
 
 
+class Eject(Command):
+    """
+    Eject the CD.
+    """
+
+    def exec(self, vm: VM) -> None:
+        """
+        Eject the CD.
+        """
+        vm.eject('ide0-cd0', force=True)
+
+
 class FindText(Command):
     """
     Find a given text.

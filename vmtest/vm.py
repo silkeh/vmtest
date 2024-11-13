@@ -123,6 +123,18 @@ class VM:
         """
         self._exec("sendkey", combo)
 
+    def eject(self, device: str, force: bool = False) -> None:
+        """
+        Eject a removable medium.
+
+        :param device: Block device to eject.
+        :param force: Eject even when in use.
+        """
+        if force:
+            self._exec('eject', '-f', device)
+        else:
+            self._exec('eject', device)
+
     def remove(self, keep_iso: bool = False) -> None:
         """
         Remove the VM.

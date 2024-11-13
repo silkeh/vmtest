@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from vmtest.command import (
     And,
+    Eject,
     FindText,
     If,
     IfEdition,
@@ -137,6 +138,7 @@ class Solus:
             WaitFor(FindText("All done"), attempts=60, interval=5),
             Keys("alt+d", wait=1),
             Screenshot(),
+            Eject(),
             Reboot(),
         )
 
