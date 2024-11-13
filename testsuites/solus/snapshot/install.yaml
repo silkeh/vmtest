@@ -6,7 +6,7 @@
 default:
   test: install
   os: solus
-  release: 2024-10-14
+  release: snapshot
   edition: Budgie
   env:
     VMTEST_SKIP_QUICKGET: y
