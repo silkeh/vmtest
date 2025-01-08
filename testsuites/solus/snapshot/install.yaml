@@ -18,18 +18,18 @@ default:
 suites:
   # Filesystems
   - env:
-      VM_FIRMWARE: [bios, efi]
+      VM_BOOT: [legacy, efi]
       SOLUS_FS: [btrfs, ext4, f2fs]
 
   # Swap
   - env:
-      VM_FIRMWARE: [bios, efi]
+      VM_BOOT: [legacy, efi]
       SOLUS_FS: [btrfs]
       SOLUS_SWAP: [no_hibernate, hibernate]
 
   # LUKS
   - env:
-      VM_FIRMWARE: [bios, efi]
+      VM_BOOT: [legacy, efi]
       SOLUS_FS: [btrfs, ext4, f2fs]
       SOLUS_SWAP: [default, no_hibernate]
       SOLUS_LUKS: [y]

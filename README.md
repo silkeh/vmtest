@@ -62,7 +62,7 @@ The following are generally useful:
 | Name            | Description                           |
 |-----------------|---------------------------------------|
 | `VM_ISO`        | Path to the ISO file                  |
-| `VM_FIRMWARE`   | Set VM firmware (`bios` or `efi`)     |
+| `VM_BOOT`       | Set VM firmware (`legacy` or `efi`)   |
 | `VM_VIEWER`     | Configure viewer (`none` disables)    |
 | `VM_SECUREBOOT` | Configure secure boot (`off` or `on`) | 
 
@@ -110,7 +110,7 @@ default:
 suites:
   - release: [v3.19, v3.20]
     env:
-      VM_FIRMWARE: [bios, efi]
+      VM_BOOT: [legacy, efi]
 ```
 
 It is possible to use environment variables in the test.

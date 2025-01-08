@@ -13,4 +13,4 @@ default:
 suites:
   - release: [v3.19, v3.20]
     env:
-      VM_FIRMWARE: [bios, efi]
+      VM_BOOT: [legacy, efi]
