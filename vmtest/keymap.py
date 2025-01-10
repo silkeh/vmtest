@@ -70,7 +70,7 @@ EN_US = Keymap(
         "'": "apostrophe",
         ",": "comma",
         "<": "shift-comma",
-        ">": "shift-period",
+        ">": "shift-dot",
         "/": "slash",
         "?": "shift-slash",
         ".": "dot",
