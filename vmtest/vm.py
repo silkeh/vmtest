@@ -210,6 +210,10 @@ class QuickEmu(VM):
             stdout=self._subprocess_output(),
             stderr=self._subprocess_output(),
         )
+
+        while not os.path.exists(socket_path):
+            time.sleep(0.1)
+
         super().__init__(
             info=info, socket_path=socket_path, screenshot_dir=screenshot_dir
         )
