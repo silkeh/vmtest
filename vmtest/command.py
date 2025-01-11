@@ -1,6 +1,6 @@
 import os.path
 import time
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 from vmtest.i18n import I18n
 from vmtest.image import make_png, search_screenshot, search_screenshot_regex
@@ -284,19 +284,24 @@ class If(Sequence):
     Execute a sequence of commands conditionally.
     """
 
-    def __init__(self, fn: Callable[[VM], bool], *commands: Command):
+    def __init__(self, cond: Union[bool,Callable[[VM], bool]], *commands: Command):
         """
         Execute a sequence of commands conditionally.
 
-        :param fn: Function that needs to return true to execute the commands.
+        :param cond: Boolean value or function that needs to return true to execute the commands.
         :param commands: Commands to execute.
         """
         super().__init__(*commands)
-        self._fn = fn
+        self._cond = cond
 
     def exec(self, vm: VM) -> None:
-        if self._fn(vm):
+        if self._resolve(vm):
             super().exec(vm)
+
+    def _resolve(self, vm: VM) -> bool:
+        if isinstance(self._cond, bool):
+            return self._cond
+        return self._cond(vm)
 
 
 class IfEdition(Sequence):
