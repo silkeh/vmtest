@@ -326,6 +326,23 @@ class And(Sequence):
     Fail unless all the given commands succeed.
     """
 
+class Any(Sequence):
+    """
+    Fail unless any of the given commands succeed.
+    Differs from 'Or' in that it executes all commands.
+    """
+
+    def exec(self, vm: VM) -> None:
+        failures: list[Error] = []
+
+        for command in self._commands:
+            try:
+                command.exec(vm)
+            except Error as f:
+                failures.append(f)
+
+        raise Error(f'All commands failed: {", ".join([str(f) for f in failures])}')
+
 
 class If(Sequence):
     """
