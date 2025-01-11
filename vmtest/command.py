@@ -30,6 +30,9 @@ class Command:
     Any implementation is expected to extend this class and implement the `exec` function.
     """
 
+    def __str__(self) -> str:
+        return self.__class__.__name__ + '()'
+
     def exec(self, vm: VM) -> None:
         """
         Run the command.
@@ -126,14 +129,21 @@ class Keys(Command):
         self._interval = interval
         self._keymap = keymap if keymap is not None else current_keymap
 
+    def __str__(self) -> str:
+        return f"Keys({self._text})"
+
     def exec(self, vm: VM) -> None:
-        log.info("⌨️", " ".join([repr(k) for k in self._keys]))
+        log.info("⌨️", self._text)
 
         for k in self._keys:
             self._keymap.send(vm, k)
             time.sleep(self._interval)
 
         time.sleep(self._wait)
+
+    @property
+    def _text(self) -> str:
+        return " ".join([repr(k) for k in self._keys])
 
 
 class Text(Keys):
@@ -157,7 +167,10 @@ class Text(Keys):
         :param keymap: Override the keymap to use.
         """
         super().__init__(*list(text), wait=wait, interval=interval, keymap=keymap)
+        self._raw_text = text
 
+    def __str__(self) -> str:
+        return f"Text({repr(self._raw_text)})"
 
 class PowerOff(Command):
     """
@@ -195,6 +208,9 @@ class Screenshot(Command):
         """
         self._name = name
         self._wait_before = wait_before
+
+    def __str__(self) -> str:
+        return f"Screenshot({repr(self._name) if self._name else ''})"
 
     def exec(self, vm: VM) -> None:
         path = self.next()
@@ -250,6 +266,9 @@ class Sleep(Command):
         """
         self.seconds = seconds
 
+    def __str__(self) -> str:
+        return f"Sleep({self.seconds})"
+
     def exec(self, vm: VM) -> None:
         log.info("⏳", f"{self.seconds} s")
         time.sleep(self.seconds)
@@ -268,9 +287,16 @@ class Sequence(Command):
         """
         self._commands = commands
 
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}({self._text})'
+
     def exec(self, vm: VM) -> None:
         for command in self._commands:
             command.exec(vm)
+
+    @property
+    def _text(self) -> str:
+        return ", ".join([str(c) for c in self._commands])
 
 
 class And(Sequence):
@@ -293,6 +319,12 @@ class If(Sequence):
         """
         super().__init__(*commands)
         self._cond = cond
+
+    def __str__(self) -> str:
+        if isinstance(self._cond, bool):
+            return f'If({self._cond}: {self._text})'
+
+        return f'If(Func: {self._text})'
 
     def exec(self, vm: VM) -> None:
         if self._resolve(vm):
@@ -319,6 +351,9 @@ class IfEdition(Sequence):
         super().__init__(*commands)
         self._edition = edition
 
+    def __str__(self) -> str:
+        return f'If(Edition=={repr(self._edition)}: {self._text})'
+
     def exec(self, vm: VM) -> None:
         log.info("🔀", f"{self._edition} == {vm.info.edition}")
         if vm.info.edition is not None and vm.info.edition.lower() == self._edition:
@@ -340,6 +375,9 @@ class IfOS(Sequence):
         super().__init__(*commands)
         self._os = osname
 
+    def __str__(self) -> str:
+        return f'If(OS=={repr(self._os)}: {self._text})'
+
     def exec(self, vm: VM) -> None:
         log.info("🔀", f"{self._os} == {vm.info.os}")
         if vm.info.os.lower() == self._os:
@@ -360,6 +398,9 @@ class IfRelease(Sequence):
         """
         super().__init__(*commands)
         self._release = release
+
+    def __str__(self) -> str:
+        return f'If(Release=={repr(self._release)}: {self._text})'
 
     def exec(self, vm: VM) -> None:
         log.info("🔀", f"{self._release} == {vm.info.release}")
@@ -401,6 +442,9 @@ class WaitFor(Command):
         self._command = command
         self._attempts = attempts
         self._interval = interval
+
+    def __str__(self) -> str:
+        return f'WaitFor({str(self._command)})'
 
     def exec(self, vm: VM) -> None:
         error: Optional[Fail] = None
