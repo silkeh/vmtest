@@ -7,7 +7,7 @@ from typing import Optional
 
 from vmtest import _log as log
 from vmtest._util import getenv_bool
-from vmtest.command import Command, Fail, Screenshot, Sequence
+from vmtest.command import Command, Error, Screenshot, Sequence
 from vmtest.i18n import load_localization
 from vmtest.image import make_timelapse
 from vmtest.vm import VM, Info, QuickEmu, QuickGet
@@ -81,7 +81,7 @@ class Runner:
 
         try:
             Sequence(*commands).exec(self.vm)
-        except Fail as ex:
+        except Error as ex:
             log.error("🚨", ex.message)
             return False
         except KeyboardInterrupt:

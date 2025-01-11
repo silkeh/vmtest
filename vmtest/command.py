@@ -10,9 +10,9 @@ from vmtest.vm import VM
 from vmtest import _log as log
 
 
-class Fail(Exception):
+class Error(Exception):
     """
-    Fail is raised when a command fails.
+    Error is raised when a command fails.
     """
 
     def __init__(self, message: str):
@@ -101,7 +101,7 @@ class FindText(Command):
                 log.info("✅", f"Found {repr(self._text)}")
                 return
 
-        raise Fail(f"{repr(self._text)} not found")
+        raise Error(f"{repr(self._text)} not found")
 
 
 class Keys(Command):
@@ -248,7 +248,7 @@ class Screenshot(Command):
 
         time.sleep(1)
         if not os.path.exists(path):
-            raise Fail("Screenshot failed")
+            raise Error("Screenshot failed")
 
         return make_png(path)
 
@@ -414,16 +414,16 @@ class Or(Sequence):
     """
 
     def exec(self, vm: VM) -> None:
-        failures: list[Fail] = []
+        failures: list[Error] = []
 
         for command in self._commands:
             try:
                 command.exec(vm)
                 return
-            except Fail as f:
+            except Error as f:
                 failures.append(f)
 
-        raise Fail(f'All commands failed: {", ".join([str(f) for f in failures])}')
+        raise Error(f'All commands failed: {", ".join([str(f) for f in failures])}')
 
 
 class WaitFor(Command):
@@ -447,7 +447,7 @@ class WaitFor(Command):
         return f'WaitFor({str(self._command)})'
 
     def exec(self, vm: VM) -> None:
-        error: Optional[Fail] = None
+        error: Optional[Error] = None
 
         for attempt in range(self._attempts):
             log.info(
@@ -458,12 +458,12 @@ class WaitFor(Command):
             try:
                 self._command.exec(vm)
                 return
-            except Fail as f:
+            except Error as f:
                 log.debug("😞", f"Attempt failed: {f}")
                 error = f
 
             time.sleep(self._interval)
 
-        raise Fail(
+        raise Error(
             f'Give up after {self._attempts} attempts: {error.message if error else ""}'
         )
