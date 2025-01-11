@@ -54,6 +54,28 @@ class Eject(Command):
         vm.eject('ide0-cd0', force=True)
 
 
+class Fail(Command):
+    """
+    Trigger a test error.
+    """
+    def __init__(self, message: str = 'failed'):
+        """
+        Trigger a test error.
+
+        :param message: Message to fail with.
+        """
+        self._message = message
+
+    def __str__(self) -> str:
+        return f"Fail({self._message})"
+
+    def exec(self, vm: VM) -> None:
+        """
+        Fail.
+        """
+        raise Error(self._message)
+
+
 class FindText(Command):
     """
     Find a given text.
