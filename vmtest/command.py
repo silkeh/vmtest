@@ -394,7 +394,7 @@ class IfEdition(Sequence):
         return f'If(Edition=={repr(self._edition)}: {self._text})'
 
     def exec(self, vm: VM) -> None:
-        log.info("🔀", f"{self._edition} == {vm.info.edition}")
+        log.info("🔀", f"If Edition ({vm.info.edition}) == {self._edition}: {self._text}")
         if vm.info.edition is not None and vm.info.edition.lower() == self._edition:
             super().exec(vm)
 
@@ -418,7 +418,7 @@ class IfOS(Sequence):
         return f'If(OS=={repr(self._os)}: {self._text})'
 
     def exec(self, vm: VM) -> None:
-        log.info("🔀", f"{self._os} == {vm.info.os}")
+        log.info("🔀", f"If OS ({vm.info.os}) == {self._os}: {self._text}")
         if vm.info.os.lower() == self._os:
             super().exec(vm)
 
@@ -442,7 +442,7 @@ class IfRelease(Sequence):
         return f'If(Release=={repr(self._release)}: {self._text})'
 
     def exec(self, vm: VM) -> None:
-        log.info("🔀", f"{self._release} == {vm.info.release}")
+        log.info("🔀", f"If Release ({vm.info.release}) == {self._release}: {self._text}")
         if vm.info.release.lower() == self._release:
             super().exec(vm)
 
