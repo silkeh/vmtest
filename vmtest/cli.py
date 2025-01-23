@@ -49,7 +49,7 @@ def _dict_diff(a: dict[str, str], b: Optional[dict[str, str]]) -> dict[str, str]
 
 
 def _env_str(env: dict[str, str], defaults: Optional[dict[str, str]]) -> str:
-    return "; ".join([f"{k}={v}" for k, v in _dict_diff(env, defaults).items()])
+    return " ".join([f"{k}={v}" for k, v in _dict_diff(env, defaults).items()])
 
 
 @dataclass
