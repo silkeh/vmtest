@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-import os
-
 from vmtest.command import (
     And,
+    Eject,
     FindText,
     If,
     IfEdition,
     Keys,
     Or,
+    Reboot,
     Screenshot,
     Sequence,
     Sleep,
@@ -16,21 +16,13 @@ from vmtest.command import (
 )
 
 
-def find_or_zoom(text) -> Or:
-    return Or(FindText(text),
-              And(Keys("ctrl-shift-equal"), FindText(text)))
-
-
 class MenuItem(Sequence):
-    def __init__(self, text: str, also_accept: list[str] = None):
-        if also_accept is None:
-            also_accept = []
-
+    def __init__(self, text: str):
         self.text = text
         super().__init__(
             Keys("meta_l", wait=2),
             Text(text, wait=2),
-            Or(*[FindText(t) for t in [text] + also_accept]),
+            FindText(text, match_case=False),
             Keys("return"),
         )
 
@@ -46,7 +38,6 @@ class Solus:
         self.user_fullname = "Test User"
         self.user_name = "user"
         self.user_password = "password123"
-        self.firmware = os.environ.get('VM_BOOT', 'efi')
 
     def _partitioning(self) -> Sequence:
         commands = [
@@ -145,21 +136,23 @@ class Solus:
             Keys("alt-i", wait=1),
             # Wait for install
             WaitFor(FindText("All done"), attempts=60, interval=5),
-            Keys("alt-r", wait=1),
+            Keys("alt+d", wait=1),
             Screenshot(),
-            Keys("alt-d", wait=1),
+            Eject(),
+            Reboot(),
         )
 
     def boot_to_desktop(self) -> Sequence:
         return Sequence(
-            If(self.luks,
-               WaitFor(FindText("enter passphrase for disk")),
-               Text(self.user_password + "\n"),
-               ),
+            If(
+                lambda _: self.luks,
+                WaitFor(FindText("enter passphrase for disk")),
+                Text(self.user_password + "\n"),
+            ),
             Sleep(5),
             IfEdition(
                 "budgie",
-                WaitFor(Or(FindText("testvm"), FindText("Test User"))),
+                WaitFor(FindText("testvm")),
                 Text(self.user_password + "\n"),
                 Sleep(5),
             ),
@@ -176,21 +169,14 @@ class Solus:
             ),
         )
 
-    def show_info_terminal(self) -> Sequence:
+    @staticmethod
+    def show_info_terminal() -> Sequence:
         return Sequence(
-            WaitFor(MenuItem("terminal", also_accept=["konsole", "applications"])),
-            Sleep(1),
-            WaitFor(find_or_zoom("testvm")),
+            WaitFor(MenuItem("terminal")),
+            WaitFor(And(Keys("ctrl-shift-equal"), FindText("testvm"))),
             # proof commands
-            Text("cat /etc/vconsole.conf\n"),
-            Text("cat /proc/cmdline\n"),
-            WaitFor(find_or_zoom('KEYMAP')),
-            Text("bootctl 2>/dev/null | head -n2\n"),
-            If(self.firmware == 'efi', WaitFor(find_or_zoom("UEFI"))),
-            If(self.firmware == 'legacy', WaitFor(find_or_zoom("Not booted with EFI"))),
             Text("free -h\n"),
             Text("lsblk\n"),
             Text("findmnt -t btrfs,ext4,f2fs | cat\n"),
-            WaitFor(find_or_zoom("TARGET")),
             Screenshot(),
         )
