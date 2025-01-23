@@ -10,6 +10,7 @@ default:
   edition: Budgie
   env:
     VMTEST_SKIP_QUICKGET: y
+    VM_EXTRA_ARGS: -boot order=cd
     VM_VIEWER: none
     VM_ISO: "$ISO_BUDGIE"
     VM_RAM: 4G
