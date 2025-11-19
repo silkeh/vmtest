@@ -18,13 +18,13 @@ from vmtest.command import (
 )
 
 
-def find_or_zoom(text) -> Or:
+def find_or_zoom(text: str) -> Or:
     return Or(FindText(text),
               And(Keys("ctrl-shift-equal"), FindText(text)))
 
 
 class MenuItem(Sequence):
-    def __init__(self, text: str, also_accept: list[str] = None):
+    def __init__(self, text: str, also_accept: list[str] | None = None):
         if also_accept is None:
             also_accept = []
 

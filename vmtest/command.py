@@ -195,6 +195,7 @@ class Text(Keys):
     def __str__(self) -> str:
         return f"Text({repr(self._raw_text)})"
 
+
 class PowerOff(Command):
     """
     Power off the VM.
@@ -327,6 +328,7 @@ class And(Sequence):
     Fail unless all the given commands succeed.
     """
 
+
 class Any(Sequence):
     """
     Fail unless any of the given commands succeed.
@@ -350,7 +352,7 @@ class If(Sequence):
     Execute a sequence of commands conditionally.
     """
 
-    def __init__(self, cond: Union[bool,Callable[[VM], bool]], *commands: Command):
+    def __init__(self, cond: Union[bool, Callable[[VM], bool]], *commands: Command):
         """
         Execute a sequence of commands conditionally.
 

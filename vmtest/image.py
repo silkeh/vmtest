@@ -22,7 +22,7 @@ def ocr_screenshot(file: str, scale: float) -> str:
     )
 
 
-def scaled_image(file: str, scale: float) -> Image:
+def scaled_image(file: str, scale: float) -> Image.Image:
     """
     Scale up an image by a certain factor.
 
