@@ -47,7 +47,7 @@ def search_screenshot(file: str, text: str, match_case: bool, ocr_scale: float) 
     :return: Boolean indicating if the text has been found or not.
     """
     data = ocr_screenshot(file, ocr_scale)
-    log.debug("👁️", f"OCR data: {repr(data)}")
+    log.debug("👁️", f"OCR data (scale: {ocr_scale}): {repr(data)}")
 
     if match_case:
         return text in data

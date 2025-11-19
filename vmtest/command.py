@@ -86,7 +86,7 @@ class FindText(Command):
         text: str | I18n,
         match_case: bool = False,
         regex: bool = False,
-        ocr_scale: float = 3,
+        ocr_scale: Optional[float] = None,
     ):
         """
         Find a given text.
@@ -111,19 +111,20 @@ class FindText(Command):
 
     def exec(self, vm: VM) -> None:
         file = self._screenshot.create(vm)
+        scales = [self._ocr_scale] if self._ocr_scale is not None else [1, 2, 3, 4]
 
-        if self._regex:
-            if search_screenshot_regex(
-                file, self._text, self._match_case, self._ocr_scale
-            ):
-                log.info("✅", f"Found {repr(self._text)}")
-                return
-        else:
-            if search_screenshot(file, self._text, self._match_case, self._ocr_scale):
+        for scale in scales:
+            if self.__search_screenshot(file, scale):
                 log.info("✅", f"Found {repr(self._text)}")
                 return
 
         raise Error(f"{repr(self._text)} not found")
+
+    def __search_screenshot(self, file: str, scale: float) -> bool:
+        if self._regex:
+            return search_screenshot_regex(file, self._text, self._match_case, scale)
+        else:
+            return search_screenshot(file, self._text, self._match_case, scale)
 
 
 class Keys(Command):
