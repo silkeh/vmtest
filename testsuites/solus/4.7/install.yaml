@@ -31,4 +31,4 @@ suites:
   # Other desktop environments
   - edition: [GNOME]
   - edition: [Plasma]
-  - edition: [XFCE-Beta]
+  - edition: [Xfce-Beta]
