@@ -114,7 +114,7 @@ class Solus:
                 Keys("meta_l", wait=1),  # Exit menu
                 Sleep(20),  # Wait for network
             ),
-            WaitFor(MenuItem("Install")),
+            WaitFor(MenuItem("Install System")),
             WaitFor(FindText("Solus")),
             # Wait for locale detection
             Sleep(2),
