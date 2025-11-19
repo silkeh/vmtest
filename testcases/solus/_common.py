@@ -124,7 +124,10 @@ class Solus:
             WaitFor(FindText("set up Solus on your computer")),
             Keys("alt-n", wait=1),
             # Region
-            WaitFor(FindText("The system language will be set to")),
+            WaitFor(Or(
+                FindText("The system language will be set to"),
+                FindText("The numbers and dates locale will be set to"),
+            )),
             Keys("alt-n", wait=1),
             # Keyboard
             WaitFor(FindText("Keyboard model")),
