@@ -107,6 +107,7 @@ class Solus:
     def install(self) -> Sequence:
         return Sequence(
             Sleep(10),
+            If(FindText("Display output is not active"), Reboot(), Sleep(10)),
             # Open installer
             IfEdition(
                 "gnome",

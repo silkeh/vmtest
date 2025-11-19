@@ -352,7 +352,7 @@ class If(Sequence):
     Execute a sequence of commands conditionally.
     """
 
-    def __init__(self, cond: Union[bool, Callable[[VM], bool]], *commands: Command):
+    def __init__(self, cond: Union[bool, Command, Callable[[VM], bool]], *commands: Command):
         """
         Execute a sequence of commands conditionally.
 
@@ -363,7 +363,7 @@ class If(Sequence):
         self._cond = cond
 
     def __str__(self) -> str:
-        if isinstance(self._cond, bool):
+        if isinstance(self._cond, bool) or isinstance(self._cond, Command):
             return f'If({self._cond}: {self._text})'
 
         return f'If(Func: {self._text})'
@@ -375,8 +375,18 @@ class If(Sequence):
     def _resolve(self, vm: VM) -> bool:
         if isinstance(self._cond, bool):
             return self._cond
+
+        if isinstance(self._cond, Command):
+            return self.__run_command(self._cond, vm)
+
         return self._cond(vm)
 
+    def __run_command(self, command: Command, vm: VM) -> bool:
+        try:
+            self._cond.exec(vm)
+            return True
+        except Error:
+            return False
 
 class IfEdition(Sequence):
     """
