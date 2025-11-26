@@ -133,6 +133,7 @@ class Solus:
             # Keyboard
             WaitFor(FindText("Keyboard model")),
             Keys("alt-n", wait=1),
+            If(FindText("Keyboard model"), Keys("alt-n", wait=1)),
             # Configure partitioning
             self._partitioning(),
             Keys("alt-n", wait=1),
