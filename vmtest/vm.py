@@ -231,6 +231,7 @@ class QuickEmu(VM):
             check=True,
             stdout=self._subprocess_output(),
             stderr=self._subprocess_output(),
+            env=self._quickemu_env(),
         )
 
         while not os.path.exists(socket_path):
@@ -271,6 +272,15 @@ class QuickEmu(VM):
         )
 
         return options, [o for o in options.pop("vm_opts", "").split(" ") if o]
+
+    @staticmethod
+    def _quickemu_env() -> dict[str, str]:
+        bin_dir = os.path.join(str(os.path.dirname(__file__)), '.bin')
+
+        env = os.environ.copy()
+        env['PATH'] = bin_dir + ':' + env['PATH']
+
+        return env
 
     @staticmethod
     def _subprocess_output() -> Optional[int]:

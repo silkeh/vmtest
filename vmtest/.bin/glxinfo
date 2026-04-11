@@ -1,0 +1,3 @@
+#!/bin/sh
+echo OpenGL ES GLSL ES 1.0
+exit 0
