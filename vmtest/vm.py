@@ -3,6 +3,7 @@ import os.path
 import signal
 import socket
 import subprocess
+import threading
 import time
 from dataclasses import dataclass
 from typing import Optional
@@ -73,20 +74,26 @@ class Info:
 
 
 class VM:
+    __line_strip = dict.fromkeys(range(32))
+
     def __init__(
-        self,
-        info: Info,
-        socket_path: str,
-        screenshot_dir: str,
+            self,
+            info: Info,
+            socket_path: str,
+            screenshot_dir: str,
     ):
         self.info = info
         self._screenshot_dir = screenshot_dir
         self._socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self._socket.connect(socket_path)
+        self._io = socket.SocketIO(self._socket, 'rb')
+        self._logthread = threading.Thread(target=self._logger)
+        self._logthread.start()
 
     def __del__(self) -> None:
         self._exec("system_powerdown")
         self._socket.close()
+        self._logthread.join(1)
 
     def _exec(self, *args: str) -> None:
         log.debug("🖥️", f"VM command: {args}")
@@ -142,6 +149,21 @@ class VM:
         :param keep_iso: Keep the ISO file.
         """
         pass
+
+    def _logger(self) -> None:
+        try:
+            while self.__log_output():
+                pass
+        except ConnectionResetError:
+            return
+
+    def __log_output(self) -> bool:
+        line = self._io.readline().decode().strip()
+        if line == '':
+            return False
+        if '\x1b' not in line:
+            log.debug("🖥️", f"VM response: {repr(line)}")
+        return True
 
 
 class QuickEmu(VM):
