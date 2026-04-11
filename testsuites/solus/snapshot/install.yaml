@@ -43,6 +43,6 @@ suites:
   - edition: [Plasma]
     env:
       VM_ISO: ["$ISO_PLASMA"]
-  - edition: [Xfce-Beta]
+  - edition: [Xfce]
     env:
       VM_ISO: ["$ISO_XFCE"]
