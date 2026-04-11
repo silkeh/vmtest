@@ -270,11 +270,20 @@ class Screenshot(Command):
     def _create(vm: VM, name: str) -> str:
         path = vm.screenshot(name)
 
-        time.sleep(1)
-        if not os.path.exists(path):
+        if not Screenshot.__wait_exists(path):
             raise Error("Screenshot failed")
 
         return make_png(path)
+
+    @staticmethod
+    def __wait_exists(path: str) -> bool:
+        for _ in range(10):
+            if os.path.exists(path):
+                return True
+
+            time.sleep(0.1)
+
+        return False
 
 
 class Sleep(Command):
