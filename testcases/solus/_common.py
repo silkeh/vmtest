@@ -193,7 +193,6 @@ class Solus:
             Sleep(1),
             WaitFor(find_or_zoom("testvm")),
             # proof commands
-            Text("cat /etc/vconsole.conf\n"),
             Text("cat /proc/cmdline\n"),
             WaitFor(find_or_zoom('KEYMAP')),
             Text("bootctl 2>/dev/null | head -n2\n"),
