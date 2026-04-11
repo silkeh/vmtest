@@ -381,12 +381,14 @@ class If(Sequence):
 
         return self._cond(vm)
 
-    def __run_command(self, command: Command, vm: VM) -> bool:
+    @staticmethod
+    def __run_command(command: Command, vm: VM) -> bool:
         try:
-            self._cond.exec(vm)
+            command.exec(vm)
             return True
         except Error:
             return False
+
 
 class IfEdition(Sequence):
     """
@@ -519,3 +521,46 @@ class WaitFor(Command):
         raise Error(
             f'Give up after {self._attempts} attempts: {error.message if error else ""}'
         )
+
+
+class While(Sequence):
+    """
+    Execute a sequence of commands while a condition holds true.
+    """
+
+    def __init__(self, cond: Union[Command, Callable[[VM], bool]], *commands: Command):
+        """
+        Execute a sequence of commands while a condition holds true.
+
+        :param cond: Boolean value or function that needs to return true to execute the commands.
+        :param commands: Commands to execute.
+        """
+        super().__init__(*commands)
+        self._cond = cond
+
+    def __str__(self) -> str:
+        if isinstance(self._cond, bool) or isinstance(self._cond, Command):
+            return f'While({self._cond}: {self._text})'
+
+        return f'While(Func: {self._text})'
+
+    def exec(self, vm: VM) -> None:
+        while self._resolve(vm):
+            super().exec(vm)
+
+    def _resolve(self, vm: VM) -> bool:
+        if isinstance(self._cond, bool):
+            return self._cond
+
+        if isinstance(self._cond, Command):
+            return self.__run_command(self._cond, vm)
+
+        return self._cond(vm)
+
+    @staticmethod
+    def __run_command(command: Command, vm: VM) -> bool:
+        try:
+            command.exec(vm)
+            return True
+        except Error:
+            return False
