@@ -12,6 +12,7 @@ default:
     VMTEST_SKIP_QUICKGET: y
     VM_EXTRA_ARGS: -boot order=cd
     VM_VIEWER: none
+    VM_DISPLAY: none
     VM_ISO: "$ISO_BUDGIE"
     VM_RAM: 4G
     VM_DISK_SIZE: 32G
