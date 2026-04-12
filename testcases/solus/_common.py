@@ -194,7 +194,7 @@ class Solus:
             WaitFor(find_or_zoom("testvm")),
             # proof commands
             Text("cat /proc/cmdline\n"),
-            WaitFor(find_or_zoom('KEYMAP')),
+            WaitFor(find_or_zoom('uuid')),
             Text("bootctl 2>/dev/null | head -n2\n"),
             If(self.firmware == 'efi', WaitFor(find_or_zoom("UEFI"))),
             If(self.firmware == 'legacy', WaitFor(find_or_zoom("Not booted with EFI"))),
