@@ -164,7 +164,7 @@ class Solus:
     def boot_to_desktop(self) -> Sequence:
         return Sequence(
             If(self.luks,
-               WaitFor(FindText("enter passphrase for disk")),
+               WaitFor(FindText("us", ocr_scale=[0.65, 0.8, 1.2])),
                Text(self.user_password + "\n"),
                ),
             Sleep(5),
