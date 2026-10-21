@@ -86,7 +86,7 @@ class FindText(Command):
         text: str | I18n,
         match_case: bool = False,
         regex: bool = False,
-        ocr_scale: Optional[float] = None,
+        ocr_scale: Union[None, float, list[float]] = None,
     ):
         """
         Find a given text.
@@ -111,7 +111,7 @@ class FindText(Command):
 
     def exec(self, vm: VM) -> None:
         file = self._screenshot.create(vm)
-        scales = [self._ocr_scale] if self._ocr_scale is not None else [1, 2, 3, 4]
+        scales = self.__ocr_scale
 
         for scale in scales:
             if self.__search_screenshot(file, scale):
@@ -119,6 +119,14 @@ class FindText(Command):
                 return
 
         raise Error(f"{repr(self._text)} not found")
+
+    @property
+    def __ocr_scale(self) -> list[float]:
+        if self._ocr_scale is None:
+            return [1, 2, 3, 4]
+        if isinstance(self._ocr_scale, float):
+            return [self._ocr_scale]
+        return self._ocr_scale
 
     def __search_screenshot(self, file: str, scale: float) -> bool:
         if self._regex:
